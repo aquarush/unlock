@@ -3,7 +3,7 @@
  *
  *   npm run setup                         # create minter key in .env.local, show address to fund
  *   npm run setup -- status               # show minter balance / token state
- *   npm run setup -- genesis <https://your-app.vercel.app>
+ *   npm run setup -- genesis <https://your-domain>
  *                                         # create the receipt NFT category + minting baton + BCMR metadata
  *
  * Run with: tsx --conditions=react-server scripts/setup.ts
@@ -59,7 +59,7 @@ async function init() {
   console.log(IS_CHIPNET
     ? `\nChipnet minter address (get free test BCH from tbch.googol.cash or chipnet.bch.ninja):\n  ${key.address}\n`
     : `\nMinter address (fund with ~0.002 BCH, about $1):\n  ${key.address}\n`);
-  console.log(`Then deploy, and run:  npm run setup -- genesis https://<your-app>.vercel.app`);
+  console.log(`Then deploy, and run:  npm run setup -- genesis https://<your-domain>`);
 }
 
 async function status() {
@@ -162,7 +162,7 @@ try {
   if (!cmd || cmd === "init") await init();
   else if (cmd === "status") await status();
   else if (cmd === "genesis") {
-    if (!arg) throw new Error("Usage: npm run setup -- genesis https://your-app.vercel.app");
+    if (!arg) throw new Error("Usage: npm run setup -- genesis https://your-domain");
     await genesis(arg);
   } else throw new Error(`Unknown command ${cmd}`);
 } catch (e) {

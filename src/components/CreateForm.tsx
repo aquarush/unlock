@@ -131,11 +131,11 @@ export function CreateForm({ config }: { config: AppConfig | null }) {
       <div className="tabs" role="tablist">
         {(
           [
-            ["text", "✍️ Secret text"],
-            ["link", "🔗 Private link"],
-            ["file", "📎 File"],
+            ["text", "✍️", "Secret text"],
+            ["link", "🔗", "Private link"],
+            ["file", "📎", "File"],
           ] as const
-        ).map(([k, label]) => (
+        ).map(([k, icon, label]) => (
           <button
             type="button"
             key={k}
@@ -146,7 +146,7 @@ export function CreateForm({ config }: { config: AppConfig | null }) {
             disabled={k === "file" && config !== null && !config.uploads}
             title={k === "file" && config && !config.uploads ? "File uploads are not enabled on this server" : undefined}
           >
-            {label}
+            <span className="tab-icon">{icon}</span> {label}
           </button>
         ))}
       </div>

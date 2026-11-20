@@ -1,6 +1,6 @@
 # 🔓 Unlock: sell anything for Bitcoin Cash, with one link
 
-**Live:** https://unlock-cash.vercel.app · **BCH BLAZE 2026** entry (Mainnet track + Paytaca *Decentralized Identity* bounty)
+**Live:** https://162-35-99-74.sslip.io · **Source:** https://github.com/aquarush/unlock · **BCH BLAZE 2026** entry (Mainnet track + Paytaca *Decentralized Identity* bounty)
 
 Turn a secret text, a private link or a file into a payment link. Buyers pay in BCH from their
 own wallet in one tap and instantly get the content, plus a **CashToken NFT receipt** that
@@ -55,7 +55,8 @@ broadcast and verifies with no blockchain access. Full spec: **[IDENTITY.md](IDE
 
 Next.js 16 (App Router) · TypeScript · [libauth](https://libauth.org) (tx building, signing, BCH VM verification) ·
 [@electrum-cash/network](https://www.npmjs.com/package/@electrum-cash/network) (Fulcrum) ·
-WizardConnect · nostr-tools (keys/signatures only; small custom relay client) · Upstash Redis · Vercel.
+WizardConnect · nostr-tools (keys/signatures only; small custom relay client) · Upstash Redis (or a local JSON file) ·
+self-hosted on a VPS (Next.js standalone build behind Apache).
 
 | Path | What |
 |---|---|
@@ -87,6 +88,13 @@ npm run dev:chipnet                                # shows a blue "CHIPNET" bann
 Environment variables (production): `MINTER_WIF`, `TOKEN_CATEGORY`, `APP_SECRET`, `NEXT_PUBLIC_SITE_URL`,
 `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; optional `BLOB_READ_WRITE_TOKEN` (file uploads),
 `NEXT_PUBLIC_BCH_NETWORK=chipnet`, `NEXT_PUBLIC_REPO_URL`, `NEXT_PUBLIC_SLIDES_URL`, `NEXT_PUBLIC_DONATION_ADDRESS`.
+
+Deploy to your own server (standalone build, systemd service behind a reverse proxy; secrets stay in
+`/etc/unlock.env` on the server):
+
+```bash
+VPS=root@your-server SITE=https://your-domain ./scripts/deploy-vps.sh
+```
 
 Verify any identity link from the terminal:
 
