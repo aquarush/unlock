@@ -21,6 +21,7 @@ export const POST = route(async (req: Request) => {
 
   const check = await verifyPayment(String(b.txHex ?? ""), {
     listingId,
+    nonce: String(quote.n ?? ""),
     sellerAddress: listing.sellerAddress,
     sellerSats: quote.s,
     feeAddress: quote.fa,

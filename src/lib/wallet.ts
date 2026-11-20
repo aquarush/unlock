@@ -144,11 +144,11 @@ const estimateSize = (inputs: number, outputBytes: number) => 10 + inputs * 148 
 /** Pays the seller + receipt fee in one transaction tagged with the listing id. */
 export async function payForListing(
   manager: DappConnectionManager,
-  p: { listingId: string; title: string; sellerAddress: string; sellerSats: number; feeAddress: string; feeSats: number },
+  p: { listingId: string; nonce: string; title: string; sellerAddress: string; sellerSats: number; feeAddress: string; feeSats: number },
 ): Promise<string> {
   const { addresses, coins } = await scan(manager);
   const spendable = coins.filter((c) => !c.utxo.token_data).sort((a, b) => b.utxo.value - a.utxo.value);
-  const memo = opReturn(MEMO_TAG, p.listingId);
+  const memo = opReturn(MEMO_TAG, p.listingId, p.nonce);
   const outputs: Out[] = [
     { valueSatoshis: BigInt(p.sellerSats), lockingBytecode: lockingBytecode(p.sellerAddress) },
     { valueSatoshis: BigInt(p.feeSats), lockingBytecode: lockingBytecode(p.feeAddress) },

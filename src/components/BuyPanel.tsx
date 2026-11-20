@@ -69,6 +69,7 @@ export function BuyPanel({ listing }: { listing: PublicListing }) {
       setStep("signing");
       const txHex = await payForListing(manager, {
         listingId: listing.id,
+        nonce: q.nonce,
         title: listing.title,
         sellerAddress: q.sellerAddress,
         sellerSats: q.sellerSats,
@@ -101,7 +102,7 @@ export function BuyPanel({ listing }: { listing: PublicListing }) {
         });
       } catch (e) {
         last = e;
-        if (/not tagged|too low|not paid|missing|belongs/i.test((e as Error).message)) break;
+        if (/not tagged|too low|not paid|missing|belongs|different checkout/i.test((e as Error).message)) break;
         await new Promise((r) => setTimeout(r, 1500 * (i + 1)));
       }
     }

@@ -59,12 +59,14 @@ export interface PaymentCheck {
 
 export async function verifyPayment(
   hex: string,
-  expect: { listingId: string; sellerAddress: string; sellerSats: number; feeAddress: string; feeSats: number },
+  expect: { listingId: string; nonce: string; sellerAddress: string; sellerSats: number; feeAddress: string; feeSats: number },
 ): Promise<PaymentCheck> {
   const { tx, txid } = decode(hex);
 
   const memo = tx.outputs.map((o) => parseOpReturn(o.lockingBytecode)).find((p) => p?.[0] === MEMO_TAG);
   if (!memo || memo[1] !== expect.listingId) throw new VerifyError("Payment is not tagged for this item");
+  // The nonce ties this payment to the quote it was made from (and so to the buyer's browser).
+  if (!expect.nonce || memo[2] !== expect.nonce) throw new VerifyError("This payment was made from a different checkout");
 
   const sellerLock = lockingBytecode(expect.sellerAddress);
   const feeLock = lockingBytecode(expect.feeAddress);

@@ -45,6 +45,7 @@ export interface Quote {
   usdPerBch: number;
   feeUsd: number;
   expiresAt: number;
+  nonce: string;
 }
 
 export interface AppConfig {
