@@ -1,0 +1,37 @@
+{
+  "name": "unlock-cash",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "setup": "tsx --conditions=react-server scripts/setup.ts",
+    "dev:chipnet": "set -a && . ./.env.chipnet && set +a && next dev",
+    "setup:chipnet": "NEXT_PUBLIC_BCH_NETWORK=chipnet tsx --conditions=react-server scripts/setup.ts",
+    "verify-id": "tsx scripts/verify-identity.ts"
+  },
+  "dependencies": {
+    "@bitauth/libauth": "^3.1.0-next.8",
+    "@electrum-cash/network": "^4.4.8",
+    "@upstash/redis": "^1.41.0",
+    "@vercel/blob": "^2.9.0",
+    "@wizardconnect/core": "^0.2.11",
+    "@wizardconnect/dapp": "^0.2.8",
+    "@wizardconnect/react": "^0.2.7",
+    "next": "16.4.6",
+    "nostr-tools": "2.25.5",
+    "qrcode-generator": "^2.0.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  },
+  "type": "module"
+}

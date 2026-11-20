@@ -1,0 +1,34 @@
+{
+  "$schema": "https://cashtokens.org/bcmr-v2.schema.json",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "latestRevision": "2026-11-20T12:26:12.058Z",
+  "registryIdentity": {
+    "name": "Unlock",
+    "description": "Unlock.cash: sell anything for Bitcoin Cash. Receipt NFTs prove a purchase.",
+    "uris": {
+      "icon": "http://localhost:3000/icon.png",
+      "web": "http://localhost:3000"
+    }
+  },
+  "identities": {
+    "d339a66ead89b5690c490b2694c1730e367ddaa8d9b7bca369f48b86c245e7be": {
+      "2026-11-20T12:26:12.059Z": {
+        "name": "Unlock Receipt",
+        "description": "Proof of purchase on Unlock. The NFT commitment is the item id. Hold it to re-open the item on any device; gift or resell it to transfer access.",
+        "token": {
+          "category": "d339a66ead89b5690c490b2694c1730e367ddaa8d9b7bca369f48b86c245e7be",
+          "symbol": "UNLOCK",
+          "decimals": 0
+        },
+        "uris": {
+          "icon": "http://localhost:3000/icon.png",
+          "web": "http://localhost:3000"
+        }
+      }
+    }
+  }
+}
