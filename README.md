@@ -102,6 +102,11 @@ Verify any identity link from the terminal:
 npm run verify-id -- npub1…   |   bitcoincash:q…   |   alice@example.com
 ```
 
+## Unlock on XO
+
+The purchase flow is also available as an [XO](https://stack.xo.cash/) template, with chipnet transactions that pass
+the app's own payment verifier: see **[xo/README.md](xo/README.md)**.
+
 ## Security notes
 
 - The server never holds buyer or seller funds; only the minter key (which holds the minting baton and

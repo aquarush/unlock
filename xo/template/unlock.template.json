@@ -1,0 +1,330 @@
+{
+  "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
+  "name": "Unlock: pay-to-unlock",
+  "description": "Sell a secret, link or file for BCH. The buyer pays the seller, pays the receipt fee and tags the payment with the item id and their checkout nonce in one transaction, which is everything the Unlock server needs to verify a purchase and reveal the content.",
+  "icon": "unlock",
+  "version": "1",
+  "supported": [
+    "BCH_2023_05",
+    "BCH_2024_05",
+    "BCH_2025_05",
+    "BCH_2026_05"
+  ],
+  "resources": [
+    {
+      "name": "Unlock",
+      "description": "The original Unlock app this template migrates.",
+      "url": "https://github.com/aquarush/unlock"
+    }
+  ],
+  "roles": {
+    "seller": {
+      "name": "Seller",
+      "description": "Lists an item and receives the payment.",
+      "icon": "seller"
+    },
+    "buyer": {
+      "name": "Buyer",
+      "description": "Pays for an item to unlock its content.",
+      "icon": "buyer"
+    }
+  },
+  "start": [
+    {
+      "action": "sell",
+      "role": "seller",
+      "generate": [
+        "sellerKey"
+      ]
+    }
+  ],
+  "actions": {
+    "sell": {
+      "name": "Sell an item",
+      "description": "Offer an item for a fixed price. The buyer pays the price to the seller and the receipt fee to Unlock, tagged with the item id.",
+      "icon": "unlock",
+      "roles": {
+        "seller": {
+          "name": "Sell",
+          "description": "Ask $(<priceSatoshis>) satoshis for item $(<itemId>).",
+          "icon": "seller",
+          "requirements": {
+            "secrets": [
+              "sellerKey"
+            ],
+            "variables": [
+              "itemId",
+              "priceSatoshis",
+              "feeSatoshis",
+              "feeLockingScript"
+            ]
+          }
+        },
+        "buyer": {
+          "name": "Buy",
+          "description": "Pay $(<priceSatoshis>) satoshis plus a $(<feeSatoshis>) satoshi receipt fee to unlock item $(<itemId>).",
+          "icon": "buyer",
+          "requirements": {
+            "variables": [
+              "quoteNonce"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "seller",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "buyer",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "purchaseTransaction"
+    },
+    "withdraw": {
+      "name": "Withdraw sale",
+      "description": "Move the proceeds of a sale to another address.",
+      "icon": "send",
+      "roles": {
+        "seller": {
+          "name": "Withdraw",
+          "description": "Send sale proceeds to $(<withdrawLockingScript>).",
+          "icon": "send",
+          "requirements": {
+            "secrets": [
+              "sellerKey"
+            ],
+            "variables": [
+              "withdrawLockingScript",
+              "withdrawSatoshis"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "seller",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "withdrawTransaction"
+    }
+  },
+  "transactions": {
+    "purchaseTransaction": {
+      "name": "Item unlocked",
+      "description": "Item $(<itemId>) was bought for $(<priceSatoshis>) satoshis.",
+      "icon": "unlock",
+      "roles": {
+        "seller": {
+          "name": "Sold",
+          "description": "Sold item $(<itemId>) for $(<priceSatoshis>) satoshis.",
+          "icon": "seller"
+        },
+        "buyer": {
+          "name": "Bought",
+          "description": "Bought item $(<itemId>) for $(<priceSatoshis>) satoshis.",
+          "icon": "buyer"
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "sellerPaymentOutput",
+          "outputIndex": 0
+        },
+        {
+          "output": "receiptFeeOutput",
+          "outputIndex": 1
+        },
+        {
+          "output": "unlockTagOutput",
+          "outputIndex": 2
+        }
+      ],
+      "version": 2,
+      "locktime": 0,
+      "composable": true
+    },
+    "withdrawTransaction": {
+      "name": "Sale withdrawn",
+      "description": "Sale proceeds were withdrawn.",
+      "icon": "send",
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "withdrawOutput"
+        }
+      ],
+      "version": 2,
+      "locktime": 0,
+      "composable": true
+    }
+  },
+  "outputs": {
+    "sellerPaymentOutput": {
+      "name": "Payment to seller",
+      "description": "$(<priceSatoshis>) satoshis for item $(<itemId>).",
+      "icon": "seller",
+      "lockingScript": "sellerLockingScript",
+      "valueSatoshis": "$(<priceSatoshis>)",
+      "token": null,
+      "roles": {
+        "seller": {
+          "name": "Payment received",
+          "description": "Received $(<priceSatoshis>) satoshis for item $(<itemId>)."
+        },
+        "buyer": {
+          "name": "Payment sent",
+          "description": "Paid $(<priceSatoshis>) satoshis for item $(<itemId>)."
+        }
+      }
+    },
+    "receiptFeeOutput": {
+      "name": "Receipt fee",
+      "description": "$(<feeSatoshis>) satoshis that fund the buyer's NFT receipt.",
+      "icon": "receipt",
+      "lockingScript": "$(<feeLockingScript>)",
+      "valueSatoshis": "$(<feeSatoshis>)",
+      "token": null
+    },
+    "unlockTagOutput": {
+      "name": "Unlock tag",
+      "description": "OP_RETURN \"UNLK\" <item id> <checkout nonce>, which binds this payment to item $(<itemId>) and to the buyer's checkout.",
+      "icon": "tag",
+      "lockingScript": "unlockTagLockingScript",
+      "valueSatoshis": "0",
+      "token": null
+    },
+    "withdrawOutput": {
+      "name": "Withdrawal",
+      "description": "$(<withdrawSatoshis>) satoshis of sale proceeds.",
+      "icon": "send",
+      "lockingScript": "$(<withdrawLockingScript>)",
+      "valueSatoshis": "$(<withdrawSatoshis>)",
+      "token": null
+    }
+  },
+  "lockingScripts": {
+    "sellerLockingScript": {
+      "name": "Sale proceeds",
+      "description": "Payments received for items, spendable by the seller.",
+      "icon": "seller",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockSeller",
+      "unlockingBytecode": "unlockSeller",
+      "actions": [],
+      "roles": {
+        "seller": {
+          "state": {
+            "variables": [
+              "itemId"
+            ],
+            "secrets": [
+              "sellerKey"
+            ]
+          },
+          "actions": [
+            {
+              "action": "withdraw",
+              "role": "seller",
+              "secrets": [
+                {
+                  "sellerKey": null
+                }
+              ]
+            }
+          ],
+          "balance": {
+            "satoshis": true
+          },
+          "selectable": true
+        }
+      }
+    },
+    "unlockTagLockingScript": {
+      "name": "Unlock tag",
+      "description": "Provably unspendable data output that names the item being bought.",
+      "icon": "tag",
+      "lockingType": "p2s",
+      "lockingBytecode": "unlockTag",
+      "unlockingBytecode": "unspendable",
+      "state": {
+        "variables": [],
+        "secrets": []
+      },
+      "selectable": false,
+      "balance": {
+        "satoshis": "0n",
+        "fungibleTokens": "0n",
+        "nonfungibleTokens": 0
+      }
+    }
+  },
+  "scripts": {
+    "lockSeller": "OP_DUP OP_HASH160 <$(<sellerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG",
+    "unlockSeller": "<sellerKey.schnorr_signature.all_outputs> <sellerKey.public_key>",
+    "unlockTag": "OP_RETURN <\"UNLK\"> <itemId> <quoteNonce>",
+    "unspendable": "OP_RETURN"
+  },
+  "constants": {},
+  "variables": {
+    "sellerKey": {
+      "name": "Seller key",
+      "description": "Key that receives and can spend sale proceeds.",
+      "type": "private_key"
+    },
+    "itemId": {
+      "name": "Item id",
+      "description": "The Unlock listing id, e.g. ibUS4RXvCq (1-75 bytes, so its size is also its push opcode).",
+      "type": "string"
+    },
+    "priceSatoshis": {
+      "name": "Price",
+      "description": "Price of the item, paid in full to the seller.",
+      "type": "satoshis"
+    },
+    "feeSatoshis": {
+      "name": "Receipt fee",
+      "description": "3% of the price (minimum 2,000 satoshis); funds the buyer's NFT receipt.",
+      "type": "satoshis"
+    },
+    "feeLockingScript": {
+      "name": "Receipt minter",
+      "description": "Locking script of the Unlock receipt minter that is paid the fee.",
+      "type": "locking_script"
+    },
+    "withdrawLockingScript": {
+      "name": "Withdraw to",
+      "description": "Where to send sale proceeds.",
+      "type": "locking_script"
+    },
+    "withdrawSatoshis": {
+      "name": "Withdraw amount",
+      "description": "Satoshis to withdraw.",
+      "type": "satoshis"
+    },
+    "quoteNonce": {
+      "name": "Checkout nonce",
+      "description": "Secret nonce from the buyer's Unlock checkout quote. It ties the payment to that checkout, so nobody else can claim it.",
+      "type": "string"
+    }
+  },
+  "icons": [],
+  "inputs": {}
+}

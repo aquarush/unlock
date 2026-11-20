@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD="$(mktemp -d)"
 trap 'rm -rf "$BUILD"' EXIT
 
-rsync -a --exclude .next --exclude .scratch --exclude .data --exclude .vercel --exclude .git --exclude '.env*' "$ROOT/" "$BUILD/"
+rsync -a --exclude .next --exclude .scratch --exclude .data --exclude .vercel --exclude .git --exclude xo --exclude '.env*' "$ROOT/" "$BUILD/"
 # Public build-time values only (NEXT_PUBLIC_*). Server secrets are read at runtime from /etc/unlock.env.
 grep '^NEXT_PUBLIC_' "$ROOT/.env.local" 2>/dev/null | grep -v '^NEXT_PUBLIC_SITE_URL=' > "$BUILD/.env.production.local" || true
 echo "NEXT_PUBLIC_SITE_URL=$SITE" >> "$BUILD/.env.production.local"
