@@ -154,7 +154,7 @@ async function genesis(siteUrl: string) {
   console.log(`  Genesis tx:      ${tx.txid}`);
   console.log(`  TOKEN_CATEGORY=${category}`);
   console.log(`  Identity holder: ${identity.address} (do not spend its 1000-sat output)`);
-  console.log(`\nNext: commit public/bcmr.json, add TOKEN_CATEGORY to Vercel env vars, redeploy.`);
+  console.log(`\nNext: commit public/bcmr.json, add TOKEN_CATEGORY to the server env (/etc/unlock.env), redeploy.`);
 }
 
 const [cmd, arg] = process.argv.slice(2);

@@ -5,7 +5,7 @@
 # Secrets live on the server in /etc/unlock.env (root-only); they are never uploaded by this script.
 set -euo pipefail
 VPS="${VPS:-root@162.35.99.74}"
-SITE="${SITE:-https://162-35-99-74.sslip.io}"
+SITE="${SITE:-https://unlock-bch.pages.dev}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD="$(mktemp -d)"
 trap 'rm -rf "$BUILD"' EXIT

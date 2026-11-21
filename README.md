@@ -1,6 +1,13 @@
 # 🔓 Unlock: sell anything for Bitcoin Cash, with one link
 
-**Live:** https://162-35-99-74.sslip.io · **Source:** https://github.com/aquarush/unlock · **BCH BLAZE 2026** entry (Mainnet track + Paytaca *Decentralized Identity* bounty)
+**Live:** https://unlock-bch.pages.dev · **Source:** https://github.com/aquarush/unlock · **BCH BLAZE 2026** entry
+
+| BCH BLAZE 2026 | What covers it | Where to look |
+|---|---|---|
+| **Mainnet track** | The whole app, live on BCH mainnet: payment links, one-tap checkout, NFT receipts | [Live site](https://unlock-bch.pages.dev), `src/` |
+| **Paytaca: Decentralized Identity** | BCH ⇄ Nostr identity link: cross-signed proofs on public relays, verifier, sign-in, pay-to-npub | [Requirement table](#decentralized-identity-paytaca-bounty), [IDENTITY.md](IDENTITY.md), `src/lib/identity.ts` |
+| **Migrate to XO** | Unlock's purchase transaction rebuilt as an XO template; the XO-built tx passes the original server's verifier | [xo/README.md](xo/README.md), [`xo/template/unlock.template.json`](xo/template/unlock.template.json) |
+| **Build with XO** | Two-party `sell` invitation plus `withdraw` follow-up, run on chipnet, with engine notes | [xo/README.md § Chipnet transactions](xo/README.md#chipnet-transactions), [xo/NOTES.md](xo/NOTES.md) |
 
 Turn a secret text, a private link or a file into a payment link. Buyers pay in BCH from their
 own wallet in one tap and instantly get the content, plus a **CashToken NFT receipt** that
@@ -56,7 +63,8 @@ broadcast and verifies with no blockchain access. Full spec: **[IDENTITY.md](IDE
 Next.js 16 (App Router) · TypeScript · [libauth](https://libauth.org) (tx building, signing, BCH VM verification) ·
 [@electrum-cash/network](https://www.npmjs.com/package/@electrum-cash/network) (Fulcrum) ·
 WizardConnect · nostr-tools (keys/signatures only; small custom relay client) · Upstash Redis (or a local JSON file) ·
-self-hosted on a VPS (Next.js standalone build behind Apache).
+self-hosted on a VPS (Next.js standalone build behind Apache), served at `unlock-bch.pages.dev` through a
+Cloudflare Pages proxy ([`cloudflare-pages/_worker.js`](cloudflare-pages/_worker.js)).
 
 | Path | What |
 |---|---|
@@ -95,6 +103,11 @@ Deploy to your own server (standalone build, systemd service behind a reverse pr
 ```bash
 VPS=root@your-server SITE=https://your-domain ./scripts/deploy-vps.sh
 ```
+
+Optional public name: [`cloudflare-pages/_worker.js`](cloudflare-pages/_worker.js) forwards every request to the
+server, so a Cloudflare Pages project can serve the site at `<name>.pages.dev`. Set `ORIGIN` in that file to your
+server, then deploy with `npx wrangler pages deploy cloudflare-pages --project-name <name>` (or upload a zip of the
+folder in the dashboard).
 
 Verify any identity link from the terminal:
 

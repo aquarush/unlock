@@ -3,7 +3,7 @@
 Unlock's purchase flow migrated to an [XO](https://stack.xo.cash/) template, for the BCH BLAZE 2026
 **Migrate to XO** and **Build with XO** bounties.
 
-- **Original project:** [Unlock](https://github.com/aquarush/unlock) (live: https://162-35-99-74.sslip.io).
+- **Original project:** [Unlock](https://github.com/aquarush/unlock) (live: https://unlock-bch.pages.dev).
   Sellers turn a secret, link or file into a payment link. Buyers pay in BCH and the server reveals the content.
 - **XO implementation:** this folder. The template is in [`template/unlock.template.json`](template/unlock.template.json).
 
