@@ -9,7 +9,7 @@ export function BlazeBanner() {
       <div className="blaze-inner">
         <span className="blaze-tag">🔥 BCH BLAZE 2026 entry</span>
         {IS_CHIPNET && <span className="blaze-tag" style={{ background: "#2563eb" }}>🧪 CHIPNET — test money only</span>}
-        <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">📊 Presentation</a>
+        <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">🎬 Presentation</a>
         <a href={SITE.repoUrl} target="_blank" rel="noreferrer">💻 Source code</a>
         {SITE.donationAddress ? (
           <span className="blaze-donate">

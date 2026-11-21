@@ -1,0 +1,35 @@
+1
+00:00:00,600 --> 00:00:06,176
+You made something worth paying for. A beat pack. A guide. A secret recipe.
+
+2
+00:00:08,600 --> 00:00:14,480
+But selling it online means sign-ups, a cut of every sale, and waiting weeks to get paid.
+
+3
+00:00:17,600 --> 00:00:22,575
+Meet Unlock. Sell anything for Bitcoin Cash — with one link.
+
+4
+00:00:24,600 --> 00:00:33,727
+Add a secret, a link, or a file. Set a price in dollars, choose where you get paid, and your link is ready. Listing is free.
+
+5
+00:00:37,600 --> 00:00:48,594
+Your buyer opens the link, and taps pay. Their own wallet signs it: Paytaca, Cashonize, any WizardConnect wallet. Seconds later, the content unlocks.
+
+6
+00:00:51,600 --> 00:01:01,921
+It's one Bitcoin Cash transaction. The price goes straight to the seller — every cent. A small fee mints the receipt. And Unlock never holds the money.
+
+7
+00:01:04,600 --> 00:01:15,517
+The buyer also gets an NFT receipt — a CashToken. It re-opens the content on any device. Gift it, or resell it, and access goes with it.
+
+8
+00:01:16,600 --> 00:01:26,038
+Sellers can get paid at their Nostr name, instead of a long address. Two signatures link the keys, so buyers see a verified badge.
+
+9
+00:01:28,300 --> 00:01:37,750
+No accounts. No emails. No middlemen. Just Bitcoin Cash. Try it today, at unlock-bch.pages.dev.
