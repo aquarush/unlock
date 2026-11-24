@@ -95,7 +95,7 @@ npm run dev:chipnet                                # shows a blue "CHIPNET" bann
 
 Environment variables (production): `MINTER_WIF`, `TOKEN_CATEGORY`, `APP_SECRET`, `NEXT_PUBLIC_SITE_URL`,
 `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; optional `BLOB_READ_WRITE_TOKEN` (file uploads),
-`NEXT_PUBLIC_BCH_NETWORK=chipnet`, `NEXT_PUBLIC_REPO_URL`, `NEXT_PUBLIC_SLIDES_URL`, `NEXT_PUBLIC_DONATION_ADDRESS`.
+`NEXT_PUBLIC_BCH_NETWORK=chipnet`, `NEXT_PUBLIC_REPO_URL`, `NEXT_PUBLIC_SLIDES_URL`, `NEXT_PUBLIC_VIDEO_URL`, `NEXT_PUBLIC_DONATION_ADDRESS`.
 
 Deploy to your own server (standalone build, systemd service behind a reverse proxy; secrets stay in
 `/etc/unlock.env` on the server):
