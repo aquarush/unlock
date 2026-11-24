@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Unlock's purchase flow as an XO template (BCH BLAZE 2026: Migrate to XO)",
+  "description": "Unlock on XO: purchase flow (Migrate to XO) and split sales (Build with XO), BCH BLAZE 2026",
   "engines": {
     "node": ">=22"
   },

@@ -1,0 +1,401 @@
+{
+  "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
+  "name": "Unlock: split sale",
+  "description": "Sell an item made by two people. One purchase pays the seller and a collaborator their agreed shares, pays the receipt fee and tags the payment with the item id, all in one transaction. Each payee is paid to a key they generated themselves and can withdraw their share on their own.",
+  "icon": "split",
+  "version": "1",
+  "supported": [
+    "BCH_2023_05",
+    "BCH_2024_05",
+    "BCH_2025_05",
+    "BCH_2026_05"
+  ],
+  "resources": [
+    {
+      "name": "Unlock",
+      "description": "The Unlock app. Its purchase flow pays a single seller; this template adds revenue splitting.",
+      "url": "https://github.com/aquarush/unlock"
+    }
+  ],
+  "roles": {
+    "seller": {
+      "name": "Seller",
+      "description": "Lists the item, sets the price split and receives their share.",
+      "icon": "seller"
+    },
+    "collaborator": {
+      "name": "Collaborator",
+      "description": "Co-author of the item. Agrees to the split and receives their share at their own key.",
+      "icon": "collaborator"
+    },
+    "buyer": {
+      "name": "Buyer",
+      "description": "Pays for the item to unlock its content.",
+      "icon": "buyer"
+    }
+  },
+  "start": [
+    {
+      "action": "splitSale",
+      "role": "seller",
+      "generate": [
+        "sellerKey"
+      ]
+    }
+  ],
+  "actions": {
+    "splitSale": {
+      "name": "Sell with a revenue split",
+      "description": "Offer an item whose price is split between the seller and a collaborator in the same transaction.",
+      "icon": "split",
+      "roles": {
+        "seller": {
+          "name": "Sell",
+          "description": "Sell item $(<itemId>): $(<sellerShareSatoshis>) satoshis to me, $(<collaboratorShareSatoshis>) satoshis to my collaborator.",
+          "icon": "seller",
+          "requirements": {
+            "secrets": [
+              "sellerKey"
+            ],
+            "variables": [
+              "itemId",
+              "sellerShareSatoshis",
+              "collaboratorShareSatoshis",
+              "feeSatoshis",
+              "feeLockingScript"
+            ]
+          }
+        },
+        "collaborator": {
+          "name": "Co-sell",
+          "description": "Receive $(<collaboratorShareSatoshis>) satoshis from every sale of item $(<itemId>).",
+          "icon": "collaborator",
+          "generate": [
+            "collaboratorKey"
+          ],
+          "requirements": {
+            "secrets": [
+              "collaboratorKey"
+            ]
+          }
+        },
+        "buyer": {
+          "name": "Buy",
+          "description": "Pay $(<sellerShareSatoshis>) + $(<collaboratorShareSatoshis>) satoshis plus a $(<feeSatoshis>) satoshi receipt fee to unlock item $(<itemId>).",
+          "icon": "buyer",
+          "requirements": {
+            "variables": [
+              "quoteNonce"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "seller",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "collaborator",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "buyer",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "splitPurchaseTransaction"
+    },
+    "withdrawShare": {
+      "name": "Withdraw share",
+      "description": "Move a collaborator's share of a sale to another address.",
+      "icon": "send",
+      "roles": {
+        "collaborator": {
+          "name": "Withdraw",
+          "description": "Send my share to $(<withdrawLockingScript>).",
+          "icon": "send",
+          "requirements": {
+            "secrets": [
+              "collaboratorKey"
+            ],
+            "variables": [
+              "withdrawLockingScript",
+              "withdrawSatoshis"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "collaborator",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "withdrawShareTransaction"
+    }
+  },
+  "transactions": {
+    "splitPurchaseTransaction": {
+      "name": "Item unlocked (split)",
+      "description": "Item $(<itemId>) was bought; the price was split between seller and collaborator.",
+      "icon": "split",
+      "roles": {
+        "seller": {
+          "name": "Sold",
+          "description": "Sold item $(<itemId>), received $(<sellerShareSatoshis>) satoshis.",
+          "icon": "seller"
+        },
+        "collaborator": {
+          "name": "Share received",
+          "description": "Received $(<collaboratorShareSatoshis>) satoshis from a sale of item $(<itemId>).",
+          "icon": "collaborator"
+        },
+        "buyer": {
+          "name": "Bought",
+          "description": "Bought item $(<itemId>).",
+          "icon": "buyer"
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "sellerShareOutput",
+          "outputIndex": 0
+        },
+        {
+          "output": "collaboratorShareOutput",
+          "outputIndex": 1
+        },
+        {
+          "output": "receiptFeeOutput",
+          "outputIndex": 2
+        },
+        {
+          "output": "splitTagOutput",
+          "outputIndex": 3
+        }
+      ],
+      "version": 2,
+      "locktime": 0,
+      "composable": true
+    },
+    "withdrawShareTransaction": {
+      "name": "Share withdrawn",
+      "description": "A collaborator's share was withdrawn.",
+      "icon": "send",
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "withdrawOutput"
+        }
+      ],
+      "version": 2,
+      "locktime": 0,
+      "composable": true
+    }
+  },
+  "outputs": {
+    "sellerShareOutput": {
+      "name": "Seller's share",
+      "description": "$(<sellerShareSatoshis>) satoshis for item $(<itemId>).",
+      "icon": "seller",
+      "lockingScript": "sellerLockingScript",
+      "valueSatoshis": "$(<sellerShareSatoshis>)",
+      "token": null
+    },
+    "collaboratorShareOutput": {
+      "name": "Collaborator's share",
+      "description": "$(<collaboratorShareSatoshis>) satoshis for item $(<itemId>).",
+      "icon": "collaborator",
+      "lockingScript": "collaboratorLockingScript",
+      "valueSatoshis": "$(<collaboratorShareSatoshis>)",
+      "token": null
+    },
+    "receiptFeeOutput": {
+      "name": "Receipt fee",
+      "description": "$(<feeSatoshis>) satoshis that fund the buyer's NFT receipt.",
+      "icon": "receipt",
+      "lockingScript": "$(<feeLockingScript>)",
+      "valueSatoshis": "$(<feeSatoshis>)",
+      "token": null
+    },
+    "splitTagOutput": {
+      "name": "Unlock tag",
+      "description": "OP_RETURN \"UNLK\" <item id> <checkout nonce>, which binds this payment to item $(<itemId>) and to the buyer's checkout.",
+      "icon": "tag",
+      "lockingScript": "splitTagLockingScript",
+      "valueSatoshis": "0",
+      "token": null
+    },
+    "withdrawOutput": {
+      "name": "Withdrawal",
+      "description": "$(<withdrawSatoshis>) satoshis of a collaborator's share.",
+      "icon": "send",
+      "lockingScript": "$(<withdrawLockingScript>)",
+      "valueSatoshis": "$(<withdrawSatoshis>)",
+      "token": null
+    }
+  },
+  "lockingScripts": {
+    "sellerLockingScript": {
+      "name": "Seller's share",
+      "description": "The seller's share of sales, spendable by the seller.",
+      "icon": "seller",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockSeller",
+      "unlockingBytecode": "unlockSeller",
+      "actions": [],
+      "roles": {
+        "seller": {
+          "state": {
+            "variables": [
+              "itemId"
+            ],
+            "secrets": [
+              "sellerKey"
+            ]
+          },
+          "actions": [],
+          "balance": {
+            "satoshis": true
+          },
+          "selectable": true
+        }
+      }
+    },
+    "collaboratorLockingScript": {
+      "name": "Collaborator's share",
+      "description": "The collaborator's share of sales, spendable only by the collaborator.",
+      "icon": "collaborator",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockCollaborator",
+      "unlockingBytecode": "unlockCollaborator",
+      "actions": [],
+      "roles": {
+        "collaborator": {
+          "state": {
+            "variables": [
+              "itemId"
+            ],
+            "secrets": [
+              "collaboratorKey"
+            ]
+          },
+          "actions": [
+            {
+              "action": "withdrawShare",
+              "role": "collaborator",
+              "secrets": [
+                {
+                  "collaboratorKey": null
+                }
+              ]
+            }
+          ],
+          "balance": {
+            "satoshis": true
+          },
+          "selectable": true
+        }
+      }
+    },
+    "splitTagLockingScript": {
+      "name": "Unlock tag",
+      "description": "Provably unspendable data output that names the item being bought.",
+      "icon": "tag",
+      "lockingType": "p2s",
+      "lockingBytecode": "splitTag",
+      "unlockingBytecode": "unspendable",
+      "state": {
+        "variables": [],
+        "secrets": []
+      },
+      "selectable": false,
+      "balance": {
+        "satoshis": "0n",
+        "fungibleTokens": "0n",
+        "nonfungibleTokens": 0
+      }
+    }
+  },
+  "scripts": {
+    "lockSeller": "OP_DUP OP_HASH160 <$(<sellerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG",
+    "unlockSeller": "<sellerKey.schnorr_signature.all_outputs> <sellerKey.public_key>",
+    "lockCollaborator": "OP_DUP OP_HASH160 <$(<collaboratorKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG",
+    "unlockCollaborator": "<collaboratorKey.schnorr_signature.all_outputs> <collaboratorKey.public_key>",
+    "splitTag": "OP_RETURN <\"UNLK\"> <itemId> <quoteNonce>",
+    "unspendable": "OP_RETURN"
+  },
+  "constants": {},
+  "variables": {
+    "sellerKey": {
+      "name": "Seller key",
+      "description": "Key that receives and can spend the seller's share.",
+      "type": "private_key"
+    },
+    "collaboratorKey": {
+      "name": "Collaborator key",
+      "description": "Key the collaborator generates when joining; receives and can spend their share.",
+      "type": "private_key"
+    },
+    "itemId": {
+      "name": "Item id",
+      "description": "The Unlock listing id (1-75 bytes).",
+      "type": "string"
+    },
+    "sellerShareSatoshis": {
+      "name": "Seller's share",
+      "description": "Part of the price paid to the seller.",
+      "type": "satoshis"
+    },
+    "collaboratorShareSatoshis": {
+      "name": "Collaborator's share",
+      "description": "Part of the price paid to the collaborator.",
+      "type": "satoshis"
+    },
+    "feeSatoshis": {
+      "name": "Receipt fee",
+      "description": "3% of the full price (minimum 2,000 satoshis); funds the buyer's NFT receipt.",
+      "type": "satoshis"
+    },
+    "feeLockingScript": {
+      "name": "Receipt minter",
+      "description": "Locking script of the Unlock receipt minter that is paid the fee.",
+      "type": "locking_script"
+    },
+    "withdrawLockingScript": {
+      "name": "Withdraw to",
+      "description": "Where to send the share.",
+      "type": "locking_script"
+    },
+    "withdrawSatoshis": {
+      "name": "Withdraw amount",
+      "description": "Satoshis to withdraw.",
+      "type": "satoshis"
+    },
+    "quoteNonce": {
+      "name": "Checkout nonce",
+      "description": "Secret nonce from the buyer's Unlock checkout quote.",
+      "type": "string"
+    }
+  },
+  "icons": [],
+  "inputs": {}
+}

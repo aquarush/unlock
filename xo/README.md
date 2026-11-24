@@ -1,11 +1,27 @@
 # Unlock on XO
 
-Unlock's purchase flow migrated to an [XO](https://stack.xo.cash/) template, for the BCH BLAZE 2026
-**Migrate to XO** and **Build with XO** bounties.
+Unlock's work for the BCH BLAZE 2026 **Migrate to XO** and **Build with XO** bounties. These are two separate
+templates: Migrate moves Unlock's existing purchase flow to XO, and Build adds a feature Unlock never had
+(**split sales**: one purchase pays a seller *and* a collaborator).
+
+## Links for the GP team
+
+| | Migrate to XO | Build with XO |
+|---|---|---|
+| **Template** | [`template/unlock.template.json`](https://github.com/aquarush/unlock/blob/main/xo/template/unlock.template.json) | [`template/unlock-split.template.json`](https://github.com/aquarush/unlock/blob/main/xo/template/unlock-split.template.json) |
+| **Invitation** | [`invitations/ibUS4RXvCq.purchase.json`](https://github.com/aquarush/unlock/blob/main/xo/invitations/ibUS4RXvCq.purchase.json) | [`invitations/spLitDemo1.split-purchase.json`](https://github.com/aquarush/unlock/blob/main/xo/invitations/spLitDemo1.split-purchase.json) |
+| **Transaction** (chipnet) | [`a027560f…5b03`](https://chipnet.imaginary.cash/tx/a027560fde92d49b9856322db72306b1eb413b1778d7b4eec553624d567c5b03) | [`38a9c9dc…2d16`](https://chipnet.imaginary.cash/tx/38a9c9dc6056903ab00f50b294d58f939e6adf53f6a1344f182b666edc8a2d16) |
+| Follow-up action | `withdraw`: [invitation](https://github.com/aquarush/unlock/blob/main/xo/invitations/withdraw-30d8aef0.json), [tx](https://chipnet.imaginary.cash/tx/30d8aef0d051da082fe98e7602f0d5296fbb7838d548cb0a1302283fdc617f0c) | `withdrawShare`: [invitation](https://github.com/aquarush/unlock/blob/main/xo/invitations/withdraw-share-1377d100.json), [tx](https://chipnet.imaginary.cash/tx/1377d100cd426fed0d6564a49d1e788b5d43dd1458229573b56c3cefc5c30bff) |
+
+**Prior art (the existing project that was migrated):** Unlock before any XO work,
+[repo at `27a9883`](https://github.com/aquarush/unlock/tree/27a9883), live at https://unlock-bch.pages.dev.
+It pays exactly one seller per purchase; it has no revenue splitting and no collaborator role.
+
+# Migrate to XO: the purchase flow
 
 - **Original project:** [Unlock](https://github.com/aquarush/unlock) (live: https://unlock-bch.pages.dev).
   Sellers turn a secret, link or file into a payment link. Buyers pay in BCH and the server reveals the content.
-- **XO implementation:** this folder. The template is in [`template/unlock.template.json`](template/unlock.template.json).
+- **XO implementation:** [`template/unlock.template.json`](template/unlock.template.json).
 
 ## What was migrated
 
@@ -43,14 +59,57 @@ XO passes the **original Unlock server's `verifyPayment`**, and the same transac
 The purchase transaction has these outputs: 1,000 sats to the seller, 2,000 sats to Unlock's chipnet minter,
 `6a 04 554e4c4b 0a 69625553345258764371 0c <nonce>` (`OP_RETURN "UNLK" "ibUS4RXvCq" "FAYSwXn3AW3s"`), and change.
 
+# Build with XO: split sales (new feature)
+
+Digital goods are often made by more than one person (a co-written guide, a beat plus vocals, a course with a guest).
+In Unlock today one seller gets the whole price, so the seller would have to pay their collaborator by hand
+afterwards, and the collaborator has to trust them. The split-sale template makes the buyer's single payment pay
+both of them directly, at shares they agreed on before the sale. This was never part of Unlock.
+
+Template: [`template/unlock-split.template.json`](template/unlock-split.template.json), action **`splitSale`**
+with three roles, each run as a separate XO account in its own process:
+
+1. **seller** starts it: generates `sellerKey`, sets `itemId`, `sellerShareSatoshis`, `collaboratorShareSatoshis`,
+   `feeSatoshis`, `feeLockingScript`, and adds their share output and the receipt fee output.
+2. **collaborator** joins it: the template's `generate` makes them a fresh `collaboratorKey`, and they add their own
+   share output. Only the collaborator can add it, because its script needs their key; the seller never sees that key.
+3. **buyer** accepts it: adds `OP_RETURN "UNLK" <itemId> <quoteNonce>`, funds it, adds change, signs and broadcasts.
+
+| Output | Value | Locked to |
+|---|---|---|
+| 0 | `sellerShareSatoshis` | `sellerLockingScript` (seller's generated key) |
+| 1 | `collaboratorShareSatoshis` | `collaboratorLockingScript` (collaborator's generated key) |
+| 2 | `feeSatoshis` (3% of the full price, min 2,000) | Unlock's receipt minter |
+| 3 | 0 | `OP_RETURN "UNLK" <itemId> <quoteNonce>` |
+| 4 | change | buyer (added by the engine) |
+
+**Follow-up action:** `collaboratorLockingScript` offers **`withdrawShare`** to the collaborator, who spends their
+share with the template's own unlocking script, without the seller.
+
+Chipnet run (seller 1,500 sats, collaborator 1,000 sats, fee 2,000 sats):
+
+| Step | Invitation | Transaction |
+|---|---|---|
+| `splitSale`: seller starts, collaborator joins, buyer funds, signs, broadcasts | [`invitations/spLitDemo1.split-purchase.json`](invitations/spLitDemo1.split-purchase.json) (earlier states: [`.split-sell`](invitations/spLitDemo1.split-sell.json), [`.split-join`](invitations/spLitDemo1.split-join.json)) | [`38a9c9dc…2d16`](https://chipnet.imaginary.cash/tx/38a9c9dc6056903ab00f50b294d58f939e6adf53f6a1344f182b666edc8a2d16) |
+| `withdrawShare` (collaborator follow-up) | [`invitations/withdraw-share-1377d100.json`](invitations/withdraw-share-1377d100.json) | [`1377d100…0bff`](https://chipnet.imaginary.cash/tx/1377d100cd426fed0d6564a49d1e788b5d43dd1458229573b56c3cefc5c30bff) |
+
+Reproduce:
+
+```bash
+node scripts/split-sell.mjs spLitDemo1 1500 1000   # seller -> invitations/spLitDemo1.split-sell.json
+node scripts/split-join.mjs spLitDemo1             # collaborator -> invitations/spLitDemo1.split-join.json
+node scripts/split-buy.mjs spLitDemo1              # buyer -> broadcasts, invitations/spLitDemo1.split-purchase.json
+node scripts/withdraw-share.mjs <bchtest:address>  # collaborator withdraws their share
+```
+
 ## Inspect with the XO debug tool
 
 1. Open https://blaze.xo.cash and select a **Chipnet** account.
-2. **Import Template:** paste `template/unlock.template.json`.
-3. **Join Invitation:** paste `invitations/ibUS4RXvCq.purchase.json` (or the withdraw invitation), then **View invitation**.
+2. **Import Template:** paste `template/unlock.template.json` (Migrate) or `template/unlock-split.template.json` (Build).
+3. **Join Invitation:** paste the matching invitation from the tables above, then **View invitation**.
    Don't click *Accept invitation*.
 
-## Reproduce
+## Reproduce (Migrate)
 
 Requires Node 22+.
 

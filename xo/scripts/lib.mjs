@@ -7,14 +7,17 @@ import { p2pkhTemplate } from "@xo-cash/templates";
 
 const here = new URL("..", import.meta.url).pathname;
 export const TEMPLATE_PATH = here + "template/unlock.template.json";
+export const SPLIT_TEMPLATE_PATH = here + "template/unlock-split.template.json";
+const ROLES = ["seller", "buyer", "collaborator"];
 const WALLETS = here + ".wallets.json";
 
 export function wallets() {
-  if (!existsSync(WALLETS)) {
-    const w = { seller: generateBip39Mnemonic(), buyer: generateBip39Mnemonic() };
+  const w = existsSync(WALLETS) ? JSON.parse(readFileSync(WALLETS, "utf8")) : {};
+  if (ROLES.some((r) => !w[r])) {
+    for (const r of ROLES) w[r] ??= generateBip39Mnemonic();
     writeFileSync(WALLETS, JSON.stringify(w, null, 2), { mode: 0o600 });
   }
-  return JSON.parse(readFileSync(WALLETS, "utf8"));
+  return w;
 }
 
 export async function openEngine(name) {
@@ -27,9 +30,10 @@ export async function openEngine(name) {
   });
   const p2pkh = await engine.importTemplate(p2pkhTemplate);
   const unlock = await engine.importTemplate(readFileSync(TEMPLATE_PATH, "utf8"));
+  const split = await engine.importTemplate(readFileSync(SPLIT_TEMPLATE_PATH, "utf8"));
   const id = p2pkh.templateIdentifier;
   await engine.setDefaultPolicies({ change: { templateIdentifier: id }, receive: { templateIdentifier: id }, address: { templateIdentifier: id } });
-  return { engine, p2pkhId: id, unlockId: unlock.templateIdentifier };
+  return { engine, p2pkhId: id, unlockId: unlock.templateIdentifier, splitId: split.templateIdentifier };
 }
 
 export const json = (v) => JSON.stringify(v, (k, x) => (typeof x === "bigint" ? x.toString() : x), 2);

@@ -7,7 +7,7 @@
 | **Mainnet track** | The whole app, live on BCH mainnet: payment links, one-tap checkout, NFT receipts | [Live site](https://unlock-bch.pages.dev), `src/` |
 | **Paytaca: Decentralized Identity** | BCH ⇄ Nostr identity link: cross-signed proofs on public relays, verifier, sign-in, pay-to-npub | [Requirement table](#decentralized-identity-paytaca-bounty), [IDENTITY.md](IDENTITY.md), `src/lib/identity.ts` |
 | **Migrate to XO** | Unlock's purchase transaction rebuilt as an XO template; the XO-built tx passes the original server's verifier | [xo/README.md](xo/README.md), [`xo/template/unlock.template.json`](xo/template/unlock.template.json) |
-| **Build with XO** | Two-party `sell` invitation plus `withdraw` follow-up, run on chipnet, with engine notes | [xo/README.md § Chipnet transactions](xo/README.md#chipnet-transactions), [xo/NOTES.md](xo/NOTES.md) |
+| **Build with XO** | New feature, separate template: **split sales**, a three-party invitation (seller, collaborator, buyer) where one purchase pays both creators, plus a `withdrawShare` follow-up, run on chipnet | [xo/README.md § Links for the GP team](xo/README.md#links-for-the-gp-team), [`xo/template/unlock-split.template.json`](xo/template/unlock-split.template.json) |
 
 Turn a secret text, a private link or a file into a payment link. Buyers pay in BCH from their
 own wallet in one tap and instantly get the content, plus a **CashToken NFT receipt** that
@@ -118,7 +118,8 @@ npm run verify-id -- npub1…   |   bitcoincash:q…   |   alice@example.com
 ## Unlock on XO
 
 The purchase flow is also available as an [XO](https://stack.xo.cash/) template, with chipnet transactions that pass
-the app's own payment verifier: see **[xo/README.md](xo/README.md)**.
+the app's own payment verifier (Migrate to XO). A second template adds split sales, a new feature (Build with XO).
+Both are in **[xo/README.md](xo/README.md)**, with a links table for the GP team.
 
 ## Security notes
 
