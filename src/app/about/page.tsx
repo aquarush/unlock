@@ -29,7 +29,7 @@ export default function About() {
       <p>Listing is free. The seller gets 100% of the price. Buyers pay a receipt fee of 3% (minimum about 1¢), which covers minting the NFT. Network fees are fractions of a cent.</p>
 
       <p>
-        <a href={SITE.repoUrl} target="_blank" rel="noreferrer">Source code</a> · <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">Presentation</a>
+        <a href={SITE.repoUrl} target="_blank" rel="noreferrer">Source code</a> · <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">Presentation</a> · <a href="/xo">Unlock on XO</a>
       </p>
     </div>
   );

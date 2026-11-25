@@ -13,6 +13,8 @@ templates: Migrate moves Unlock's existing purchase flow to XO, and Build adds a
 | **Transaction** (chipnet) | [`a027560f…5b03`](https://chipnet.imaginary.cash/tx/a027560fde92d49b9856322db72306b1eb413b1778d7b4eec553624d567c5b03) | [`38a9c9dc…2d16`](https://chipnet.imaginary.cash/tx/38a9c9dc6056903ab00f50b294d58f939e6adf53f6a1344f182b666edc8a2d16) |
 | Follow-up action | `withdraw`: [invitation](https://github.com/aquarush/unlock/blob/main/xo/invitations/withdraw-30d8aef0.json), [tx](https://chipnet.imaginary.cash/tx/30d8aef0d051da082fe98e7602f0d5296fbb7838d548cb0a1302283fdc617f0c) | `withdrawShare`: [invitation](https://github.com/aquarush/unlock/blob/main/xo/invitations/withdraw-share-1377d100.json), [tx](https://chipnet.imaginary.cash/tx/1377d100cd426fed0d6564a49d1e788b5d43dd1458229573b56c3cefc5c30bff) |
 
+**Feedback on developing with XO:** [`FEEDBACK.md`](https://github.com/aquarush/unlock/blob/main/xo/FEEDBACK.md) · web page: https://unlock-bch.pages.dev/xo
+
 **Prior art (the existing project that was migrated):** Unlock before any XO work,
 [repo at `27a9883`](https://github.com/aquarush/unlock/tree/27a9883), live at https://unlock-bch.pages.dev.
 It pays exactly one seller per purchase; it has no revenue splitting and no collaborator role.

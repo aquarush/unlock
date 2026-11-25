@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span>🔓 Unlock · built on Bitcoin Cash with CashTokens + WizardConnect</span>
             <span>
               <a href={SITE.repoUrl} target="_blank" rel="noreferrer">Source</a> ·{" "}
-              <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">Presentation</a> · <a href="/about">How it works</a>
+              <a href={SITE.slidesUrl} target="_blank" rel="noreferrer">Presentation</a> · <a href="/about">How it works</a> · <a href="/xo">XO</a>
             </span>
           </footer>
         </WalletProvider>
